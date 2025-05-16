@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A+B Toys Catalog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #ff6f61;
+      --primary-light: #ff8e83;
+      --secondary: #6a8d92;
+      --light: #f7f3e9;
+      --dark: #333;
+      --gray: #666;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--light);
+      margin: 0; 
+      padding: 0;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    header {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 2rem;
+      font-weight: 700;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
+      background-size: 200% 200%;
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+      0% { background-position: 100% 100%; }
+      100% { background-position: 0 0; }
+    }
+    
+    .search-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+      position: relative;
+    }
+    
+    #search {
+      width: 100%;
+      padding: 12px 20px;
+      border: 2px solid var(--primary);
+      border-radius: 30px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    #search:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 10px rgba(106, 141, 146, 0.5);
+    }
+    
+    .filter-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .filter-btn {
+      background: white;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    main {
+      padding: 20px;
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s forwards;
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+    }
+    
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 2px solid var(--primary);
+      transition: transform 0.5s;
+    }
+    
+    .card:hover img {
+      transform: scale(1.05);
+    }
+    
+    .card .info {
+      padding: 15px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .card .info h3 {
+      margin: 10px 0 5px;
+      font-size: 1.2rem;
+      color: var(--dark);
+      transition: color 0.3s;
+    }
+    
+    .card:hover .info h3 {
+      color: var(--primary);
+    }
+    
+    .card .info p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+    
+    .add-to-cart {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .add-to-cart:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+    
+    .add-to-cart:active {
+      transform: translateY(0);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .card:hover::before {
+      opacity: 1;
+    }
+    
+    footer {
+      margin: 40px 0 20px;
+      font-size: 0.9rem;
+      color: var(--gray);
+      text-align: center;
+      width: 100%;
+    }
+    
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    
+    .social-icons a {
+      color: var(--primary);
+      font-size: 1.2rem;
+      transition: transform 0.3s, color 0.3s;
+    }
+    
+    .social-icons a:hover {
+      color: var(--secondary);
+      transform: translateY(-3px);
+    }
+    
+    /* Animation delays for cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+    .card:nth-child(7) { animation-delay: 0.7s; }
+    .card:nth-child(8) { animation-delay: 0.8s; }
+    .card:nth-child(9) { animation-delay: 0.9s; }
+    .card:nth-child(10) { animation-delay: 1s; }
+    
+    /* Loading animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+      animation: pulse 1.5s infinite;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      header {
+        font-size: 1.5rem;
+      }
+      
+      .filter-buttons {
+        gap: 8px;
+      }
+      
+      .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>A+B Toys Catalog</header>
+  
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Search toys...">
+  </div>
+  
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="bike">Bikes</button>
+    <button class="filter-btn" data-filter="safety">Safety</button>
+    <button class="filter-btn" data-filter="eco">Eco-Friendly</button>
+    <button class="filter-btn" data-filter="premium">Premium</button>
+  </div>
+  
+  <div class="loading">
+    <i class="fas fa-spinner fa-spin fa-2x"></i>
+  </div>
+  
+  <main>
+    <!-- Product 1 -->
+    <div class="card" data-category="bike">
+      <img src="https://i.postimg.cc/157Y4S1r/bike1.png" alt="Bike Toy 3" />
+      <div class="info">
+        <h3>Bike Toy Model 1</h3>
+        <p>Fun and colorful bike toy for kids.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 2 -->
+    <div class="card" data-category="bike safety">
+      <img src="https://i.postimg.cc/d1Rx0TJh/bike2.png" alt="Bike Toy 3" />
+      <div class="info">
+        <h3>Bike Toy Model 2</h3>
+        <p>Durable and safe bike toy with bright colors.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 3 -->
+    <div class="card" data-category="bike">
+      <img src="https://i.postimg.cc/jwk5VGLd/bike3.png" alt="Bike Toy 3" />
+      <div class="info">
+        <h3>Bike Toy Model 3</h3>
+        <p>Perfect gift for young riders.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 4 -->
+    <div class="card" data-category="bike">
+      <img src="https://i.postimg.cc/DywM2ZHz/bike4.png" alt="Bike Toy 4" />
+      <div class="info">
+        <h3>Bike Toy Model 4</h3>
+        <p>Colorful and fun, built for kids.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 5 -->
+    <div class="card" data-category="bike safety">
+      <img src="https://i.postimg.cc/mzrD5bZ5/bike6.jpg" alt="Bike Toy 5" />
+      <div class="info">
+        <h3>Bike Toy Model 5</h3>
+        <p>New design with enhanced safety features.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 6 -->
+    <div class="card" data-category="bike">
+      <img src="https://i.postimg.cc/vc7sfJbg/bike7.jpg" alt="Bike Toy 6" />
+      <div class="info">
+        <h3>Bike Toy Model 6</h3>
+        <p>Lightweight aluminum frame for easy handling.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 7 -->
+    <div class="card" data-category="bike safety">
+      <img src="https://i.postimg.cc/ThDGYysc/bike8.jpg" alt="Bike Toy 7" />
+      <div class="info">
+        <h3>Bike Toy Model 7</h3>
+        <p>Adjustable seat grows with your child.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 8 -->
+    <div class="card" data-category="bike premium">
+      <img src="https://i.postimg.cc/wRKCsVrQ/bike9.jpg" alt="Bike Toy 8" />
+      <div class="info">
+        <h3>Bike Toy Model 8</h3>
+        <p>Special edition with premium decals.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 9 -->
+    <div class="card" data-category="bike safety">
+      <img src="https://i.postimg.cc/y89XBC1d/bike11.jpg" alt="Bike Toy 3" />
+      <div class="info">
+        <h3>Bike Toy Model 10</h3>
+        <p>Eco-friendly materials, sustainable design.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>© 2025 A+B Toys. All rights reserved.</p>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-pinterest"></i></a>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Filter functionality
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const cards = document.querySelectorAll('.card');
+      
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Update active button
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          const filter = button.dataset.filter;
+          
+          // Filter cards
+          cards.forEach(card => {
+            if (filter === 'all' || card.dataset.category.includes(filter)) {
+              card.style.display = 'block';
+              card.style.animation = 'fadeInUp 0.6s forwards';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+      
+      // Search functionality
+      const searchInput = document.getElementById('search');
+      searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        cards.forEach(card => {
+          const title = card.querySelector('h3').textContent.toLowerCase();
+          const description = card.querySelector('p').textContent.toLowerCase();
+          
+          if (title.includes(searchTerm) || description.includes(searchTerm)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+      
+      // Add to cart animation
+      const addToCartButtons = document.querySelectorAll('.add-to-cart');
+      
+      addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Animation effect
+          this.innerHTML = '<i class="fas fa-check"></i> Added!';
+          this.style.backgroundColor = '#4CAF50';
+          
+          setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+            this.style.backgroundColor = '';
+          }, 1500);
+        });
+      });
+      
+      // Simulate loading (for demo purposes)
+      const loading = document.querySelector('.loading');
+      loading.style.display = 'block';
+      
+      setTimeout(() => {
+        loading.style.display = 'none';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
+
+
